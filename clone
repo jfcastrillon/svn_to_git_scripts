@@ -1,0 +1,66 @@
+#!/bin/bash
+
+####### Project name
+PROJECT_NAME="cp5_android"
+#EMAIL="wellsky.com"
+
+###########################
+####### SVN
+# SVN repository to be migrated
+USERNAME="jfcastrillon"
+PASSWORD="password"
+BASE_SVN="https://svn.bowmansystems.local/$PROJECT_NAME"
+SVN_ARGS=" --non-interactive --username=$USERNAME --password=$PASSWORD"
+
+# Organization inside BASE_SVN
+BRANCHES="branches"
+TAGS="tags"
+TRUNK="trunk"
+
+###########################
+####### GIT
+# Git repository to migrate
+GIT_URL="https://10.3.4.190/jcastrillon/${PROJECT_NAME}_test.git"
+
+###########################
+#### Don't need to change from here
+###########################
+
+# Geral Configuration
+ABSOLUTE_PATH=$(pwd)
+TMP=$ABSOLUTE_PATH/"migration-"$PROJECT_NAME
+
+# Branchs Configuration
+SVN_BRANCHES=$BASE_SVN/$BRANCHES
+SVN_TAGS=$BASE_SVN/$TAGS
+SVN_TRUNK=$BASE_SVN/$TRUNK
+
+AUTHORS=$TMP/$PROJECT_NAME"-authors.txt"
+
+echo '[LOG] Starting migration of '$SVN_TRUNK
+echo '[LOG] Using: '$(git --version)
+echo '[LOG] Using: '$(svn --version | grep svn,)
+
+if [ ! -d "$TMP" ]; then
+  # Control will enter here if $DIRECTORY doesn't exist.
+  mkdir $TMP
+fi
+
+cd $TMP
+
+echo
+echo '[LOG] Getting SSL certificates'
+svn info $BASE_SVN $SVN_ARGS
+
+#echo
+#echo '[LOG] Checking the authors file'
+if [ ! -f $AUTHORS ]; then
+    echo "Authors file not found!"
+    exit 1
+fi
+
+echo
+echo '[RUN] git svn clone --authors-file='$AUTHORS' --trunk='$TRUNK' --branches='$BRANCHES' --tags='$TAGS $BASE_SVN $TMP
+git svn clone --authors-file=$AUTHORS --trunk=$TRUNK --branches=$BRANCHES --tags=$TAGS $BASE_SVN $TMP
+
+echo 'Sucessufull cloned.'

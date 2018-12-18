@@ -1,0 +1,32 @@
+#!/bin/bash
+
+####### Project name
+PROJECT_NAME="cp5_android"
+EMAIL="wellsky.com"
+
+###########################
+####### SVN
+# SVN repository to be migrated
+USERNAME="jfcastrillon"
+PASSWORD="password"
+BASE_SVN="https://svn.bowmansystems.local/$PROJECT_NAME"
+SVN_ARGS=" --non-interactive --username=$USERNAME --password=$PASSWORD"
+
+###########################
+#### Don't need to change from here
+###########################
+
+# Geral Configuration
+ABSOLUTE_PATH=$(pwd)
+TMP=$ABSOLUTE_PATH/"migration-"$PROJECT_NAME
+
+AUTHORS=$PROJECT_NAME"-authors.txt"
+
+mkdir $TMP
+cd $TMP
+
+echo
+echo '[LOG] Getting authors'
+svn log -q $BASE_SVN $SVN_ARGS | awk -v domain=$EMAIL -F '|' '/^r/ {sub("^ ", "", $2); sub(" $", "", $2); print $2" = "$2" <"$2"@"domain">"}' | sort -u >> $AUTHORS
+
+echo 'Authors file created!'
