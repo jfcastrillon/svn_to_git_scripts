@@ -1,41 +1,51 @@
 #!/bin/bash
+title='Tool to migrate repositories from SVN to Git'
 
-authors()
-{
-    echo "Authors"
-}
+options=("1) Generate authors file"
+         "2) Clone repository"
+         "3) Migrate repository"
+         "Other: Quit")
 
-clone()
-{
-    echo "Clone"
-}
-
-migrate()
-{
-    echo "Migrate"
-}
-
-usage()
-{
-    echo "usage: options [[-A ] [-c] [-m] [-h]]"
-}
-
-while getopts "Acmh:" option; do
-    case "$option" in
-        -A | --authors) authors
-                        exit 0
-                        ;;
-        -c | --clonw)   clone
-                        exit 0
-                        ;;
-        -m | --migrate) migrate
-                        exit 0
-                        ;;
-        -h | --help)    usage
-                        exit 0
-                        ;;
-        ?)              echo "usage"
-                        usage
-                        exit 1
-    esac
+echo '-------------------------------------------------------------------------'
+echo "$title"
+echo '-------------------------------------------------------------------------'
+for each in "${options[@]}"
+do
+  echo "$each"
 done
+echo '-------------------------------------------------------------------------'
+echo 'Please enter your choice: '
+
+read n
+case $n in
+    1)
+        echo "Enter project name, username and password"
+        read -p 'Project name: ' project_name
+        read -p 'User name: ' user_name
+        read -sp 'Password: ' password
+        echo
+
+        ./gen_authors $project_name $user_name $password
+        ;;
+    2)
+        echo "Enter project name, username and password"
+        read -p 'Project name: ' project_name
+        read -p 'User name: ' user_name
+        read -sp 'Password: ' password
+        echo
+
+        ./clone $project_name $user_name $password
+        ;;
+    3)
+        echo "Enter project name, username and password"
+        read -p 'Project name: ' project_name
+        read -p 'User name: ' user_name
+        read -sp 'Password: ' password
+        echo
+
+        ./migrate $project_name $user_name $password
+        ;;
+    *)
+        echo "You've entered an invalid option [$n]"
+        ;;
+esac

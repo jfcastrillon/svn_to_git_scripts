@@ -1,14 +1,19 @@
 #!/bin/bash
 
+if [ "$#" -ne 3 ]; then
+    echo "Illegal number of parameters"
+    exit 1
+fi
+
 ####### Project name
-PROJECT_NAME="cp5_android"
+PROJECT_NAME=$1
 EMAIL="wellsky.com"
 
 ###########################
 ####### SVN
 # SVN repository to be migrated
-USERNAME="jfcastrillon"
-PASSWORD="password"
+USERNAME=$2
+PASSWORD=$3
 BASE_SVN="https://svn.bowmansystems.local/$PROJECT_NAME"
 SVN_ARGS=" --non-interactive --username=$USERNAME --password=$PASSWORD"
 
@@ -22,7 +27,11 @@ TMP=$ABSOLUTE_PATH/"migration-"$PROJECT_NAME
 
 AUTHORS=$PROJECT_NAME"-authors.txt"
 
-mkdir $TMP
+if [ ! -d "$TMP" ]; then
+  # Control will enter here if $DIRECTORY doesn't exist.
+  mkdir $TMP
+fi
+
 cd $TMP
 
 echo
