@@ -1,20 +1,26 @@
 #!/bin/bash
 
 ################################################################################
+### READ PROPERTIES FILES
+################################################################################
+file=".properties"
+
+if [ -f "$file" ]
+then
+    while IFS='=' read -r key value
+    do
+        key=$(echo $key | tr '.' '_')
+        eval ${key}=\${value}
+    done < "$file"
+else
+    echo "File $file not found."
+    exit 1
+fi
+
+################################################################################
 ### GLOBAL VARIABLES
 ################################################################################
 COMPANY="wellsky.com"
-
-SVN_HOST="https://svn.bowmansystems.net"
-SVN_USER="jfcastrillon"
-SVN_PASSWORD=""
-SVN_BRANCHES="branches"
-SVN_TAGS="tags"
-SVN_TRUNK="trunk"
-
-GIT_HOST="https://git.bowmansystems.net"
-GIT_USER="jcastrillon"
-GIT_PASSWORD=""
 
 title='Tool to migrate repositories from SVN to Git'
 
@@ -38,26 +44,26 @@ case $n in
     1)
         echo "Enter project name and svn password"
         read -p 'Project name: ' project_name
-        read -sp 'Subversion Password: ' SVN_PASSWORD
+        read -sp 'Subversion Password: ' svn_password
         echo
 
-        ./gen_authors $COMPANY $SVN_HOST $SVN_USER $SVN_PASSWORD $project_name
+        ./gen_authors $COMPANY $svn_host $svn_user $svn_password $project_name
         ;;
     2)
         echo "Enter project name and svn password"
         read -p 'Project name: ' project_name
-        read -sp 'Subversion Password: ' SVN_PASSWORD
+        read -sp 'Subversion Password: ' svn_password
         echo
 
-        ./clone $SVN_HOST $SVN_USER $SVN_PASSWORD $SVN_BRANCHES $SVN_TAGS $SVN_TRUNK $project_name
+        ./clone $svn_host $svn_user $svn_password $svn_branches $svn_tags $svn_trunk $project_name
         ;;
     3)
         echo "Enter project name, username and password"
         read -p 'Project name: ' project_name
-        read -sp 'Subversion Password: ' SVN_PASSWORD
+        read -sp 'Subversion Password: ' svn_password
         echo
 
-        ./migrate $SVN_HOST $SVN_USER $SVN_PASSWORD $SVN_BRANCHES $SVN_TAGS $SVN_TRUNK $GIT_HOST $project_name
+        ./migrate $svn_host $svn_user $svn_password $svn_branches $svn_tags $svn_trunk $GIT_HOST $project_name
         ;;
     *)
         echo "You've entered an invalid option [$n]"

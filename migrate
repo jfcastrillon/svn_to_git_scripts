@@ -92,13 +92,23 @@ done
 
 push() {
     git branch –r
+
+    # Keep the ignore settings
     git svn show-ignore > .gitignore
+
+    # Removes the validation of SSL certs
     git config --global http.sslVerify false
+
+    # Reassign the branches
     cp -rf .git/refs/remotes/origin/tags/* .git/refs/tags/
     rm -rf .git/refs/remotes/origin/tags
     cp -rf .git/refs/remotes/origin/* .git/refs/heads/
     rm -rf .git/refs/remotes/origin
+
+    # Delete the branch trunk
     git branch -d trunk
+
+    # Push to remote all the branches and tags
     git push origin --all
     git push origin --tags
 
