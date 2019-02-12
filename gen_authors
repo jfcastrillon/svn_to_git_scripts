@@ -1,21 +1,26 @@
 #!/bin/bash
 
-if [ "$#" -ne 3 ]; then
+if [ "$#" -ne 5 ]; then
     echo "Illegal number of parameters"
     exit 1
 fi
 
-####### Project name
-PROJECT_NAME=$1
-EMAIL="wellsky.com"
-
 ###########################
 ####### SVN
 # SVN repository to be migrated
-USERNAME=$2
-PASSWORD=$3
-BASE_SVN="https://svn.bowmansystems.local/$PROJECT_NAME"
-SVN_ARGS=" --non-interactive --username=$USERNAME --password=$PASSWORD"
+COMPANY=$1
+SVN_HOST=$2
+SVN_USER=$3
+SVN_PASSWORD=$4
+
+####### Project name #######
+PROJECT_NAME=$5
+
+BASE_SVN="$SVN_HOST/$PROJECT_NAME"
+SVN_ARGS=" --non-interactive --username=$SVN_USER --password=$SVN_PASSWORD"
+
+####### Removes slashes from the project name and replace it with underscore
+PROJECT_NAME=${PROJECT_NAME//[\/]/_}
 
 ###########################
 #### Don't need to change from here
@@ -36,6 +41,6 @@ cd $TMP
 
 echo
 echo '[LOG] Getting authors'
-svn log -q $BASE_SVN $SVN_ARGS | awk -v domain=$EMAIL -F '|' '/^r/ {sub("^ ", "", $2); sub(" $", "", $2); print $2" = "$2" <"$2"@"domain">"}' | sort -u >> $AUTHORS
+svn log -q $BASE_SVN $SVN_ARGS | awk -v domain=$COMPANY -F '|' '/^r/ {sub("^ ", "", $2); sub(" $", "", $2); print $2" = "$2" <"$2"@"domain">"}' | sort -u >> $AUTHORS
 
-echo 'Authors file created!'
+echo "Authors file [$AUTHORS] created!"

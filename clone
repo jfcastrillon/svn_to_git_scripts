@@ -1,44 +1,32 @@
 #!/bin/bash
 
-if [ "$#" -ne 3 ]; then
+if [ "$#" -ne 7 ]; then
     echo "Illegal number of parameters"
     exit 1
 fi
 
-####### Project name
-PROJECT_NAME=$1
-#EMAIL="wellsky.com"
-
 ###########################
 ####### SVN
 # SVN repository to be migrated
-USERNAME=$2
-PASSWORD=$3
-BASE_SVN="https://svn.bowmansystems.local/$PROJECT_NAME"
-SVN_ARGS=" --non-interactive --username=$USERNAME --password=$PASSWORD"
+SVN_HOST=$1
+SVN_USER=$2
+SVN_PASSWORD=$3
+SVN_BRANCHES=$4
+SVN_TAGS=$5
+SVN_TRUNK=$6
 
-# Organization inside BASE_SVN
-BRANCHES="branches"
-TAGS="tags"
-TRUNK="trunk"
+####### Project name #######
+PROJECT_NAME=$7
 
-###########################
-####### GIT
-# Git repository to migrate
-GIT_URL="https://10.3.4.190/jcastrillon/${PROJECT_NAME}_test.git"
+BASE_SVN="$SVN_HOST/$PROJECT_NAME"
+SVN_ARGS=" --non-interactive --username=$SVN_USER --password=$SVN_PASSWORD"
 
-###########################
-#### Don't need to change from here
-###########################
+####### Removes slashes from the project name and replace it with underscore
+PROJECT_NAME=${PROJECT_NAME//[\/]/_}
 
 # Geral Configuration
 ABSOLUTE_PATH=$(pwd)
 TMP=$ABSOLUTE_PATH/"migration-"$PROJECT_NAME
-
-# Branchs Configuration
-SVN_BRANCHES=$BASE_SVN/$BRANCHES
-SVN_TAGS=$BASE_SVN/$TAGS
-SVN_TRUNK=$BASE_SVN/$TRUNK
 
 AUTHORS=$TMP/$PROJECT_NAME"-authors.txt"
 
@@ -65,7 +53,22 @@ if [ ! -f $AUTHORS ]; then
 fi
 
 echo
-echo '[RUN] git svn clone --authors-file='$AUTHORS' --trunk='$TRUNK' --branches='$BRANCHES' --tags='$TAGS $BASE_SVN $TMP
-git svn clone --authors-file=$AUTHORS --trunk=$TRUNK --branches=$BRANCHES --tags=$TAGS $BASE_SVN $TMP
+echo '[RUN] git svn clone --authors-file='$AUTHORS' --trunk='$SVN_TRUNK' --branches='$SVN_BRANCHES' --tags='$SVN_TAGS $BASE_SVN $TMP
+clone() {
+    git svn clone --authors-file=$AUTHORS --trunk=$SVN_TRUNK --branches=$SVN_BRANCHES --tags=$SVN_TAGS $BASE_SVN $TMP
+
+    OUTPUT=$?
+}
+
+retry() {
+    git svn fetch
+
+    OUTPUT=$?
+}
+
+clone
+while [[ $OUTPUT -ne 0 ]]; do
+    retry
+done
 
 echo 'Sucessufull cloned.'

@@ -1,4 +1,21 @@
 #!/bin/bash
+
+################################################################################
+### GLOBAL VARIABLES
+################################################################################
+COMPANY="wellsky.com"
+
+SVN_HOST="https://svn.bowmansystems.net"
+SVN_USER="jfcastrillon"
+SVN_PASSWORD=""
+SVN_BRANCHES="branches"
+SVN_TAGS="tags"
+SVN_TRUNK="trunk"
+
+GIT_HOST="https://git.bowmansystems.net"
+GIT_USER="jcastrillon"
+GIT_PASSWORD=""
+
 title='Tool to migrate repositories from SVN to Git'
 
 options=("1) Generate authors file"
@@ -19,31 +36,28 @@ echo 'Please enter your choice: '
 read n
 case $n in
     1)
-        echo "Enter project name, username and password"
+        echo "Enter project name and svn password"
         read -p 'Project name: ' project_name
-        read -p 'User name: ' user_name
-        read -sp 'Password: ' password
+        read -sp 'Subversion Password: ' SVN_PASSWORD
         echo
 
-        ./gen_authors $project_name $user_name $password
+        ./gen_authors $COMPANY $SVN_HOST $SVN_USER $SVN_PASSWORD $project_name
         ;;
     2)
-        echo "Enter project name, username and password"
+        echo "Enter project name and svn password"
         read -p 'Project name: ' project_name
-        read -p 'User name: ' user_name
-        read -sp 'Password: ' password
+        read -sp 'Subversion Password: ' SVN_PASSWORD
         echo
 
-        ./clone $project_name $user_name $password
+        ./clone $SVN_HOST $SVN_USER $SVN_PASSWORD $SVN_BRANCHES $SVN_TAGS $SVN_TRUNK $project_name
         ;;
     3)
         echo "Enter project name, username and password"
         read -p 'Project name: ' project_name
-        read -p 'User name: ' user_name
-        read -sp 'Password: ' password
+        read -sp 'Subversion Password: ' SVN_PASSWORD
         echo
 
-        ./migrate $project_name $user_name $password
+        ./migrate $SVN_HOST $SVN_USER $SVN_PASSWORD $SVN_BRANCHES $SVN_TAGS $SVN_TRUNK $GIT_HOST $project_name
         ;;
     *)
         echo "You've entered an invalid option [$n]"
