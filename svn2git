@@ -61,9 +61,10 @@ case $n in
         echo "Enter project name, username and password"
         read -p 'Project name: ' project_name
         read -sp 'Subversion Password: ' svn_password
+        read -sp 'Git Password: ' git_password
         echo
 
-        ./migrate $svn_host $svn_user $svn_password $svn_branches $svn_tags $svn_trunk $GIT_HOST $project_name
+        ./migrate $svn_host $svn_user $svn_password $svn_branches $svn_tags $svn_trunk $git_host $git_user $git_password $project_name
         ;;
     *)
         echo "You've entered an invalid option [$n]"
