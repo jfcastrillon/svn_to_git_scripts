@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$#" -ne 10 ]; then
+if [ "$#" -ne 11 ]; then
     echo "Illegal number of parameters"
     exit 1
 fi
@@ -15,12 +15,8 @@ SVN_BRANCHES=$4
 SVN_TAGS=$5
 SVN_TRUNK=$6
 
-GIT_HOST=$7
-GIT_USER=$8
-GIT_PASSWORD=$9
-
 ####### Project name #######
-PROJECT_NAME=$10
+PROJECT_NAME=${11}
 
 BASE_SVN="$SVN_HOST/$PROJECT_NAME"
 SVN_ARGS=" --non-interactive --username=$SVN_USER --password=$SVN_PASSWORD"
@@ -31,7 +27,7 @@ PROJECT_NAME=${PROJECT_NAME//[\/]/_}
 ###########################
 ####### GIT
 # Git repository to migrate
-GIT_URL="$GIT_HOST/$GIT_USER/${PROJECT_NAME}.git"
+GIT_URL="$8://$9:${10}@$7/${PROJECT_NAME}.git"
 
 # Geral Configuration
 ABSOLUTE_PATH=$(pwd)
@@ -64,6 +60,9 @@ FIRST_REVISION=$( svn log -r 1:HEAD --limit 1 $BASE_SVN $SVN_ARGS | awk -F '|' '
 echo
 echo '[RUN] git svn fetch -'$FIRST_REVISION':HEAD'
 git svn fetch -$FIRST_REVISION:HEAD
+
+# Cache the credentials
+git config credential.helper 'cache --timeout=3600'
 
 echo
 echo '[RUN] git remote add origin '$GIT_URL
