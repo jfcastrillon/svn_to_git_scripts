@@ -27,7 +27,7 @@ PROJECT_NAME=${PROJECT_NAME//[\/]/_}
 ###########################
 ####### GIT
 # Git repository to migrate
-GIT_URL="$8://$9:${10}@$7/${PROJECT_NAME}.git"
+GIT_URL="$8://$9@$7/$9/${PROJECT_NAME}.git"
 
 # Geral Configuration
 ABSOLUTE_PATH=$(pwd)
@@ -69,29 +69,26 @@ echo '[RUN] git remote add origin '$GIT_URL
 git remote add origin $GIT_URL
 
 echo
-echo '[RUN] svn ls '$SVN_BRANCHES
+echo '[RUN] create local branches matching subversion'
 for BRANCH in $(svn ls $SVN_BRANCHES); do
-    echo git branch ${BRANCH%/} remotes/svn/${BRANCH%/}
-    git branch ${BRANCH%/} remotes/svn/${BRANCH%/}
+    echo git branch ${BRANCH%/} remotes/${BRANCH%/}
+    git branch ${BRANCH%/} remotes/${BRANCH%/}
 done
 
-git for-each-ref --format="%(refname:short) %(objectname)" refs/remotes/origin/tags | grep -v "@" | cut -d / -f 3- |
-while read ref
+echo '[RUN] create tags matching subversion'
+git for-each-ref --format="%(refname:short) %(objectname)" refs/remotes/tags  | 
+while read BRANCH REF
 do
-  echo git tag -a $ref -m 'import tag from svn'
-  git tag -a $ref -m 'import tag from svn'
-done
+    TAG_NAME=${BRANCH#*/}
+    BODY="$(git log -1 --format=format:%B $REF)"
 
-git for-each-ref --format="%(refname:short)" refs/remotes/origin/tags | cut -d / -f 1- |
-while read ref
-do
-  git branch -rd $ref
+    echo "ref=$REF parent=$(git rev-parse $REF^) tagname=$TAG_NAME body=$BODY" >&2
+
+    git tag -a -m "$BODY" $TAG_NAME $REF^  && git branch -r -d $BRANCH
 done
 
 
 push() {
-    git branch –r
-
     # Keep the ignore settings
     git svn show-ignore > .gitignore
 
