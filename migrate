@@ -76,7 +76,7 @@ for BRANCH in $(svn ls $SVN_BRANCHES); do
 done
 
 echo '[RUN] create tags matching subversion'
-git for-each-ref --format="%(refname:short) %(objectname)" refs/remotes/tags  | 
+git for-each-ref --format="%(refname:short) %(objectname)" refs/remotes/tags  |
 while read BRANCH REF
 do
     TAG_NAME=${BRANCH#*/}
@@ -90,7 +90,9 @@ done
 
 push() {
     # Keep the ignore settings
-    git svn show-ignore > .gitignore
+    git svn show-ignore -i trunk > .gitignore
+    git add .gitignore
+    git commit -m 'Convert svn:ignore properties to .gitignore.'
 
     # Removes the validation of SSL certs
     git config --global http.sslVerify false
