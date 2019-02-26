@@ -53,9 +53,9 @@ if [ ! -f $AUTHORS ]; then
 fi
 
 echo
-echo '[RUN] git svn clone --authors-file='$AUTHORS' --trunk='$SVN_TRUNK' --branches='$SVN_BRANCHES' --tags='$SVN_TAGS $BASE_SVN $TMP
+echo '[RUN] git svn clone --authors-file='$AUTHORS' --prefix=origin/ --trunk='$SVN_TRUNK' --branches='$SVN_BRANCHES' --tags='$SVN_TAGS $BASE_SVN $TMP
 clone() {
-    git svn clone --authors-file=$AUTHORS --trunk=$SVN_TRUNK --branches=$SVN_BRANCHES --tags=$SVN_TAGS $BASE_SVN $TMP
+    git svn clone --authors-file=$AUTHORS --prefix=origin/ --trunk=$SVN_TRUNK --branches=$SVN_BRANCHES --tags=$SVN_TAGS $BASE_SVN $TMP
 
     OUTPUT=$?
 }
