@@ -71,8 +71,8 @@ git remote add origin $GIT_URL
 echo
 echo '[RUN] create local branches matching subversion'
 for BRANCH in $(svn ls $SVN_BRANCHES); do
-    echo git branch ${BRANCH%/} remotes/${BRANCH%/}
-    git branch ${BRANCH%/} remotes/${BRANCH%/}
+    echo git branch ${BRANCH%/} remotes/origin/${BRANCH%/}
+    git branch ${BRANCH%/} remotes/origin/${BRANCH%/}
 done
 
 echo '[RUN] create tags matching subversion'
